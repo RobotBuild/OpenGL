@@ -1,0 +1,62 @@
+import pygame
+from OpenGL.GL import *
+from OpenGL.GLU import *
+from pygame.locals import *
+
+def makeQuad():
+    glBegin(GL_QUADS)
+    glVertex2f(-1, -1)
+    glVertex2f(-1, 1)
+    glVertex2f(1, 1)
+    glVertex2f(1, -1)
+    glEnd()
+
+def main():
+    pygame.init()
+    window = (400, 300)
+    display = pygame.display.set_mode(window, DOUBLEBUF | OPENGL)
+    pygame.display.set_caption('Robot arm')
+    clock = pygame.time.Clock()
+    gluOrtho2D(0, 400, 0, 300)
+
+    a1 = 30
+    a2 = 30
+    
+    while True:
+        clock.tick(100)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+
+        keys = pygame.key.get_pressed()
+        a1 += (keys[pygame.K_d])
+        a1 -= (keys[pygame.K_a]) 
+        a2 += (keys[pygame.K_w])
+        a2 -= (keys[pygame.K_s])
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+        
+        # blue arm
+        glPushMatrix()
+        glTranslated(150, 100, 0) # moves to initial position
+        glRotated(a1, 0, 0, 1) # rotation 1
+        glTranslated(20, 0, 0) # moves point of rotation
+        glScale(20, 5, 1)
+        glColor3fv((0, 0, 1))  # blue
+        makeQuad()
+        glPopMatrix()
+        
+        glPushMatrix()
+        glTranslated(150, 100, 0) # moves initial position
+        glRotated(a1, 0, 0, 1) # same as rotation 1
+        glTranslated(40, 0, 0) # moves out from center of rotation like an orbit
+        glRotated(a2, 0, 0, 1) # rotation 2
+        glTranslated(20, 0, 0) # moves point of rotation
+        glScale(20, 5, 1)
+        glColor3fv((0, 1, 0))  # green
+        makeQuad()
+        glPopMatrix()
+        
+        pygame.display.flip()
+
+if __name__ == "__main__":
+    main()
